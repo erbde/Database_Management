@@ -75,10 +75,20 @@ JOIN RAWMATERIAL_T ON RAWMATERIAL_T.MATERIALID = USES_T.MATERIALID
 on prodrawcost.productid = orderline_t.productid
 group by order_t.orderid
 order by orderid
+;
 
                                                 
 ---------------------------------------------------------
 --         E                                           --
 ---------------------------------------------------------
                                                                                                           
+select extract(month from orderdate) as month
+,sum(productstandardprice*orderedquantity) as totalsales
+from order_t
+join orderline_t on orderline_t.orderid = order_t.orderid
+join product_t on product_t.productid = orderline_t.productid
+where orderdate between '03/01/2010' and '05/31/2010'
+group by extract(month from orderdate)
+order by month
+;
                                                                                                           
