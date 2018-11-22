@@ -53,5 +53,32 @@ JOIN USES_T ON USES_T.PRODUCTID = PRODUCT_T.PRODUCTID
 JOIN RAWMATERIAL_T ON RAWMATERIAL_T.MATERIALID = USES_T.MATERIALID
 ORDER BY PRODUCT_T.PRODUCTID
 
+                                                                                                          
+---------------------------------------------------------
+--         D                                           --
+---------------------------------------------------------
+-- Display the raw material cost of each order.
+-- Dr. Yoon might not like the backwards way I did this. Consider changing!
+                                                                                                          
+select 
+order_t.orderid, sum(orderline_t.orderedquantity*prodrawcost.rawcost) totalmaterialcostofeachorder
+from order_t
+join orderline_t on orderline_t.orderid = order_t.orderid
+join
+(
+SELECT DISTINCT PRODUCT_T.PRODUCTID
+,SUM(RAWMATERIAL_T.MATERIALSTANDARDPRICE*USES_T.QUANTITYREQUIRED) OVER (PARTITION BY PRODUCT_T.PRODUCTID) AS RAWCOST
+FROM PRODUCT_T
+JOIN USES_T ON USES_T.PRODUCTID = PRODUCT_T.PRODUCTID
+JOIN RAWMATERIAL_T ON RAWMATERIAL_T.MATERIALID = USES_T.MATERIALID
+) prodrawcost
+on prodrawcost.productid = orderline_t.productid
+group by order_t.orderid
+order by orderid
 
-
+                                                
+---------------------------------------------------------
+--         E                                           --
+---------------------------------------------------------
+                                                                                                          
+                                                                                                          
