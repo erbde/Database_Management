@@ -30,13 +30,20 @@ ORDER BY PRODUCT_T.PRODUCTID,PRODUCT_T.PRODUCTSTANDARDPRICE;
 -- Display the standard price of each product 
 -- and its total raw material cost
 
-SELECT DISTINCT PRODUCT_T.PRODUCTID
-,PRODUCT_T.PRODUCTSTANDARDPRICE AS PSTANDARDPRICE
-,SUM(RAWMATERIAL_T.MATERIALSTANDARDPRICE*USES_T.QUANTITYREQUIRED) OVER (PARTITION BY PRODUCT_T.PRODUCTID) AS TOTALRAWCOSTPERPRODUCT
+select product_t.productid
+,product_t.productstandardprice as pstandardprice
+,prod_cost.totalrawcostperproduct
+from product_t
+join (
+SELECT 
+PRODUCT_T.PRODUCTID
+,SUM(RAWMATERIAL_T.MATERIALSTANDARDPRICE*USES_T.QUANTITYREQUIRED) AS TOTALRAWCOSTPERPRODUCT
 FROM PRODUCT_T
 JOIN USES_T ON USES_T.PRODUCTID = PRODUCT_T.PRODUCTID
 JOIN RAWMATERIAL_T ON RAWMATERIAL_T.MATERIALID = USES_T.MATERIALID
-ORDER BY PRODUCT_T.PRODUCTID;
+group by PRODUCT_T.PRODUCTID) prod_cost 
+on prod_cost.productid = product_t.productid
+;
 
 ---------------------------------------------------------
 --         C                                           --
@@ -91,4 +98,3 @@ where orderdate between '03/01/2010' and '05/31/2010'
 group by extract(month from orderdate)
 order by month
 ;
-                                                                                                          
